@@ -23,7 +23,7 @@ const Button = styled.input`
     cursor:pointer;
   }
 `
-const Form = () => {
+const Form = ({setCotizarToken, setCotizarCrypto}) => {
 
   const [cryptos, setCryptos] = useState([]);
 
@@ -34,7 +34,8 @@ const Form = () => {
     {cod: 'USD', name: 'Dolar USA'},
     {cod: 'MXN', name: 'Peso Mexicano'},
     {cod: 'EUR', name: 'Euro'},
-    {cod: 'GDP', name: 'Libra Esterlina'}
+    {cod: 'GDP', name: 'Libra Esterlina'},
+    {cod: 'VES', name: 'Bolivar Soberano'}
   ];
 
   const [token, setToken,SelectToken] = useToken('Elige tu moneda', '',tokens);
@@ -49,7 +50,7 @@ const Form = () => {
 
       try {
         const response = await axios.get(url);
-        console.log(response);
+        // console.log(response);
         setCryptos(response.data.Data);
       } catch (error) {
         // setError(true);
@@ -71,8 +72,9 @@ const Form = () => {
 
     // pasar los datos al componente principal
     setError(false);
-    // setToken(token);
-    // setCrypto(crypto);
+    
+    setCotizarToken(token);
+    setCotizarCrypto(crypto);
   }
 
   return (

@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled';
+import axios from 'axios';
 
 import image from "./assets/img/cryptomonedas.png"
 
 import Form from "./components/Form";
+import Cotizacion from "./components/Cotizacion";
+import Spinner from "./components/spinner";
 
 const Container = styled.div`
   max-width: 900px;
@@ -37,14 +40,61 @@ const Heading = styled.h1`
 `;
 
 function App() {
+
+  const [cotizarToken, setCotizarToken] = useState('');
+
+  const [cotizarCrypto, setCotizarCrypto] = useState('');
+
+  const [result, setResult] = useState({});
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    
+    const cotizar = async () => {
+    
+      if(cotizarToken === '' || cotizarCrypto === '') return
+      else{
+
+        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cotizarCrypto}&tsyms=${cotizarToken}`;
+        const result = await axios.get(url);
+
+        setLoading(true);
+
+        setTimeout(() => {
+          
+          setLoading(false);
+          console.log(result);
+          // console.log(result.data.DISPLAY[cotizarCrypto][cotizarToken]);
+          setResult(result.data.DISPLAY[cotizarCrypto][cotizarToken]);
+        }, 3000);
+      }
+    }
+
+    cotizar();
+  }, [cotizarToken, cotizarCrypto])
+
   return (
     <Container>
-      <div>
-        <Image src={image} alt="cryptos"/>
-      </div>
-      <div>
+      
+      <div style={{ marginBottom: 50 }}>
         <Heading>Cotiza Criptomonedas al Instante</Heading>
-        <Form />
+
+        <Form 
+        setCotizarToken={setCotizarToken}
+        setCotizarCrypto={setCotizarCrypto} 
+        />
+                
+      </div>
+      <div style={{ marginBottom: 50, marginTop: 50}}>  
+        {loading ? 
+          (<Spinner />) 
+        : 
+          (
+            <Cotizacion result={result}/>
+          )
+        }
+        <Image src={image} alt="cryptos"/>
       </div>
     </Container>
   );
